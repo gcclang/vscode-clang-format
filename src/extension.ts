@@ -162,6 +162,12 @@ export class ClangDocumentFormattingEditProvider implements vscode.DocumentForma
     }
 
     ret = vscode.workspace.getConfiguration('clang-format').get<string>('style');
+    ret = ret.replace(/\${workspaceRoot}/g, vscode.workspace.rootPath)
+    .replace(/\${workspaceFolder}/g, this.getWorkspaceFolder())
+    .replace(/\${cwd}/g, process.cwd())
+    .replace(/\${env\.([^}]+)}/g, (sub: string, envName: string) => {
+      return process.env[envName];
+    });
     if (ret && ret.trim()) {
       return ret.trim();
     } else {
